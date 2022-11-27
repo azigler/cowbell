@@ -23,6 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "react-simple-oauth2-login": "^0.5.4",
+    "socket.io-client": "^4.5.4",
     "typescript": "^4.9.3",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.5.4",
