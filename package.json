@@ -9,7 +9,7 @@
     "url": "https://github.com/azigler/cowbell.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=16"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
