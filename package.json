@@ -1,7 +1,16 @@
 {
   "name": "cowbell",
   "version": "0.1.0",
+  "author": "Andrew Zigler",
+  "description": "React front-end for MOO",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azigler/cowbell.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -10,6 +19,7 @@
     "@types/node": "^17.0.45",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -36,6 +46,7 @@
   },
   "eslintConfig": {
     "extends": [
+      "plugin:jsx-a11y/recommended",
       "react-app",
       "react-app/jest"
     ]
