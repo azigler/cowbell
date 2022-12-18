@@ -1,25 +1,40 @@
 {
-  "short_name": "Cowbell",
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "short_name": "zigMOO",
   "name": "zigMOO via Cowbell",
+  "description": "test",
+  "categories": ["games"],
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "src": "/favicon.ico?v=12042022",
+      "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "/favicon-16x16.png?v=12042022",
+      "sizes": "16x16",
+      "type": "image/png"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "/favicon-32x32.png?v=12042022",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png?v=12042022",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png?v=12042022",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
   "start_url": ".",
+  "id": "play.zigmoo.net",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ecc51b",
+  "background_color": "#ecc51b",
+  "orientation": "any"
 }

@@ -1,22 +1,26 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { App } from "../App/App"
-import { Login } from "../Login/Login"
-import { ContextProvider } from "../Context/Context"
+import { HelmetProvider } from "react-helmet-async"
+import { Metadata } from "../Metadata/Metadata"
+
+import { Layout } from "../Layout/Layout"
 import { NotFound } from "../NotFound/NotFound"
 
-function Router() {
+import { Home } from "../Home/Home"
+import { Login } from "../Login/Login"
+
+export function Router() {
   return (
-    <ContextProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <HelmetProvider>
+        <Metadata />
         <Routes>
-          <Route path="/" element={<App />}>
-            <Route index element={<Login />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
-          <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </ContextProvider>
+      </HelmetProvider>
+    </BrowserRouter>
   )
 }
-
-export { Router }

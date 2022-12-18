@@ -1,55 +1,87 @@
 import React from "react"
-import OAuth2Login from "react-simple-oauth2-login"
-import { Context } from "../Context/Context"
-const clientId = process.env.REACT_APP_OAUTH2_CLIENT_ID
+import { Helmet } from "react-helmet-async"
+import { useClientContext } from "../Context/Context"
+import { useSearchParams, Navigate } from "react-router-dom"
 
-// You can test this with a GitHub OAuth2 app (provided test server supports GitHub and Spotify)
-const onSuccess = ({ code }: { code: string }) => {
-  console.log(code)
-}
+// TIP: interchangeable with mattermost
+const {
+  REACT_APP_DISCORD_OAUTH2_CLIENT_ID,
+  REACT_APP_DISCORD_OAUTH2_CLIENT_SECRET,
+  REACT_APP_DISCORD_OAUTH2_TOKEN_URI,
+  REACT_APP_DISCORD_OAUTH2_AUTHORIZATION_URI,
+  REACT_APP_DISCORD_API_ME,
+} = process.env
 
-const onFailure = ({ code }: { code: string }) => {
-  console.log(code)
-}
+const redirectUri =
+  process.env.NODE_ENV === "production"
+    ? "https://play.zigmoo.net"
+    : "https://localhost:3000/login"
 
-function Login() {
-  const { ctx, updateCtx } = React.useContext(Context)
-
-  console.log(ctx.boop)
+export function Login() {
+  const { state, dispatch } = useClientContext()
+  const [searchParams] = useSearchParams()
 
   React.useEffect(() => {
-    console.log("running effect once")
-    if (updateCtx !== undefined) {
-      console.log("ctx is defined")
-      updateCtx({
-        boop: "wow2",
+    const code = searchParams.get("code")
+
+    if (code) {
+      const body = new URLSearchParams()
+      body.set("grant_type", "authorization_code")
+      body.set("code", code)
+      body.set("redirect_uri", redirectUri)
+      body.set("client_id", REACT_APP_DISCORD_OAUTH2_CLIENT_ID as string)
+      body.set(
+        "client_secret",
+        REACT_APP_DISCORD_OAUTH2_CLIENT_SECRET as string
+      )
+
+      fetch(`${REACT_APP_DISCORD_OAUTH2_TOKEN_URI}`, {
+        method: "POST",
+        body,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       })
-      console.log(ctx.boop)
+        .then((res) => {
+          if (res.ok) {
+            return res.json()
+          }
+        })
+        .then((data) => {
+          if (data.access_token) return data.access_token
+        })
+        .then((token) => {
+          fetch(`${REACT_APP_DISCORD_API_ME}`, {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              authorization: `Bearer ${token}`,
+            },
+          }).then(async (res) => {
+            if (res.ok) {
+              return dispatch({
+                type: "login_me",
+                me: await res.json(),
+              })
+            }
+          })
+        })
+    } else {
+      window.location.replace(
+        `${REACT_APP_DISCORD_OAUTH2_AUTHORIZATION_URI}?response_type=code&redirect_uri=${redirectUri}&client_id=${REACT_APP_DISCORD_OAUTH2_CLIENT_ID}&scope=identify%20email&prompt=none`
+      )
     }
+  }, [searchParams, dispatch])
 
-    console.log(ctx.boop)
-  }, [ctx.boop, updateCtx])
-
-  console.log(ctx.boop)
+  if (state.me) {
+    return <Navigate to="/" />
+  }
 
   return (
     <div>
-      <span>{ctx.boop}</span>
-      <OAuth2Login
-        authorizationUrl="https://chat.zigmoo.net/oauth/authorize"
-        responseType="code"
-        clientId={clientId}
-        redirectUri={
-          process.env.NODE_ENV === "production"
-            ? "https://play.zigmoo.net"
-            : "https://localhost:3000"
-        }
-        isCrossOrigin={true}
-        onSuccess={onSuccess}
-        onFailure={onFailure}
-      />
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
     </div>
   )
 }
-
-export { Login }
