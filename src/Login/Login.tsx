@@ -14,7 +14,7 @@ const {
 
 const redirectUri =
   process.env.NODE_ENV === "production"
-    ? "https://play.zigmoo.net"
+    ? "https://play.zigmoo.net/login"
     : "https://localhost:3000/login"
 
 export function Login() {
