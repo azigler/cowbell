@@ -1,3 +1,6 @@
+import { useClientContext } from "../Context/Context"
+
 export function NotFound() {
-  return <h1>404 Not Found</h1>
+  const { state } = useClientContext()
+  return <h1>404 Not Found{JSON.stringify(state)}</h1>
 }
