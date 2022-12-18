@@ -74,6 +74,7 @@ export function Login() {
   }, [searchParams, dispatch])
 
   if (state.me) {
+    if (searchParams.has("code")) searchParams.delete("code")
     return <Navigate to="/" />
   }
 
