@@ -2,6 +2,7 @@ import React from "react"
 import { Helmet } from "react-helmet-async"
 import { useClientContext } from "../Context/Context"
 import { useSearchParams, Navigate } from "react-router-dom"
+import { useLocalStorage } from "usehooks-ts"
 
 // TIP: interchangeable with mattermost
 const {
@@ -20,9 +21,27 @@ const redirectUri =
 export function Login() {
   const { state, dispatch } = useClientContext()
   const [searchParams] = useSearchParams()
+  const [token, setToken] = useLocalStorage("token", null)
 
   React.useEffect(() => {
     const code = searchParams.get("code")
+
+    const fetchMe = (token: string) => {
+      fetch(`${REACT_APP_DISCORD_API_ME}`, {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          authorization: `Bearer ${token}`,
+        },
+      }).then(async (res) => {
+        if (res.ok) {
+          return dispatch({
+            type: "login_me",
+            me: await res.json(),
+          })
+        }
+      })
+    }
 
     if (code) {
       const body = new URLSearchParams()
@@ -48,30 +67,20 @@ export function Login() {
           }
         })
         .then((data) => {
-          if (data.access_token) return data.access_token
+          if (data.access_token) {
+            setToken(data.access_token)
+            return data.access_token
+          }
         })
-        .then((token) => {
-          fetch(`${REACT_APP_DISCORD_API_ME}`, {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              authorization: `Bearer ${token}`,
-            },
-          }).then(async (res) => {
-            if (res.ok) {
-              return dispatch({
-                type: "login_me",
-                me: await res.json(),
-              })
-            }
-          })
-        })
-    } else {
+        .then((token) => fetchMe(token))
+    } else if (!token) {
       window.location.replace(
         `${REACT_APP_DISCORD_OAUTH2_AUTHORIZATION_URI}?response_type=code&redirect_uri=${redirectUri}&client_id=${REACT_APP_DISCORD_OAUTH2_CLIENT_ID}&scope=identify%20email&prompt=none`
       )
+    } else if (token) {
+      fetchMe(token)
     }
-  }, [searchParams, dispatch])
+  }, [searchParams, dispatch, setToken, token])
 
   if (state.me) {
     if (searchParams.has("code")) searchParams.delete("code")
